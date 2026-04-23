@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+@theme {
+  --color-dark-bg: #070a0f;
+  --color-dark-surface: rgba(255,255,255,0.02);
+  --color-dark-border: rgba(255,255,255,0.085);
+  --color-neon-lime: #a3ff12;
+  --color-neon-pink: #ff3db8;
+  --color-neon-cyan: #4dd7ff;
+  --color-neon-purple: #b84dff;
+  --color-neon-yellow: #ffb000;
+  --color-muted: rgba(255,255,255,0.62);
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: rgba(255,255,255,0.92);
+  background:
+    radial-gradient(1100px 560px at 12% -10%, rgba(163,255,18,.12), transparent 60%),
+    radial-gradient(980px 640px at 90% 0%, rgba(255,61,184,.10), transparent 60%),
+    linear-gradient(180deg, #05070b, #070a0f);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.04);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(163,255,18,0.3);
+  border-radius: 999px;
+}
+
+.glass-panel {
+  border: 1px solid var(--color-dark-border);
+  border-radius: 18px;
+  background: var(--color-dark-surface);
+  box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+}
