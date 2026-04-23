@@ -89,7 +89,7 @@ export default function App() {
       {loadingPct !== null && (
         <div className="fixed inset-0 z-[9999] bg-[#0a0c10]/95 backdrop-blur-md flex flex-col items-center justify-center">
           <div className="relative flex flex-col items-center p-12 border border-neon-lime border-dashed rounded-3xl bg-black/50 shadow-[0_0_50px_rgba(163,255,18,0.15)]">
-            <div className="relative w-40 h-40 flex items-center justify-center mb-8">
+            <div className="relative w-40 h-40 flex items-center justify-center mb-8 shrink-0">
               <svg className="absolute inset-0 w-full h-full transform -rotate-90">
                 <circle cx="80" cy="80" r="70" fill="none" stroke="#222" strokeWidth="12" />
                 <circle
@@ -111,9 +111,9 @@ export default function App() {
                   </linearGradient>
                 </defs>
               </svg>
-              <span className="text-4xl font-black text-neon-lime">{loadingPct}%</span>
+              <span className="w-24 text-center text-4xl font-black text-neon-lime tabular-nums">{loadingPct}%</span>
             </div>
-            <h2 className="text-xl font-bold tracking-widest uppercase text-white/90">{loadingText}</h2>
+            <h2 className="text-xl font-bold tracking-widest uppercase text-white/90 text-center min-h-[32px]">{loadingText}</h2>
           </div>
         </div>
       )}
