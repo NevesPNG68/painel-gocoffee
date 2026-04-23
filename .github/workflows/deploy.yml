@@ -26,11 +26,23 @@ jobs:
         with:
           node-version: 20
 
+      - name: Show environment
+        run: |
+          node -v
+          npm -v
+          pwd
+          ls -la
+
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
       - name: Build
         run: npm run build
+
+      - name: Verify dist
+        run: |
+          ls -la
+          ls -la dist
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
