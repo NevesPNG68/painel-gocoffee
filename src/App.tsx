@@ -12,6 +12,7 @@ export default function App() {
   const [globalBuffer, setGlobalBuffer] = useState<ArrayBuffer | null>(null);
   const [loadingPct, setLoadingPct] = useState<number | null>(null);
   const [loadingText, setLoadingText] = useState<string>('');
+  const [dashboardVisible, setDashboardVisible] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -73,6 +74,15 @@ export default function App() {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!globalBuffer) {
+      setDashboardVisible(false);
+      return;
+    }
+    const timer = setTimeout(() => setDashboardVisible(true), 250);
+    return () => clearTimeout(timer);
+  }, [globalBuffer]);
 
   return (
     <div className="min-h-screen text-white pb-12 relative">
@@ -152,9 +162,9 @@ export default function App() {
       </nav>
 
       <main className="pt-4 sm:pt-6 px-3 sm:px-6 pb-12 max-w-[1500px] mx-auto overflow-x-hidden">
-        {activeTab === 'rec' && <FaturamentoDashboard globalBuffer={globalBuffer} setGlobalBuffer={setGlobalBuffer} />}
-        {activeTab === 'desp' && <DespesasDashboard globalBuffer={globalBuffer} setGlobalBuffer={setGlobalBuffer} />}
-        {activeTab === 'pag' && <PagamentosDashboard globalBuffer={globalBuffer} setGlobalBuffer={setGlobalBuffer} />}
+        {dashboardVisible && activeTab === 'rec' && <FaturamentoDashboard globalBuffer={globalBuffer} setGlobalBuffer={setGlobalBuffer} />}
+        {dashboardVisible && activeTab === 'desp' && <DespesasDashboard globalBuffer={globalBuffer} setGlobalBuffer={setGlobalBuffer} />}
+        {dashboardVisible && activeTab === 'pag' && <PagamentosDashboard globalBuffer={globalBuffer} setGlobalBuffer={setGlobalBuffer} />}
       </main>
     </div>
   );
