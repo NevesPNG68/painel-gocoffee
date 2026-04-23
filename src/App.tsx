@@ -87,10 +87,10 @@ export default function App() {
   return (
     <div className="min-h-screen text-white pb-12 relative">
       {loadingPct !== null && (
-        <div className="fixed inset-0 z-[9999] bg-[#0a0c10]/95 backdrop-blur-md flex flex-col items-center justify-center">
-          <div className="relative flex flex-col items-center p-12 border border-neon-lime border-dashed rounded-3xl bg-black/50 shadow-[0_0_50px_rgba(163,255,18,0.15)]">
-            <div className="relative w-40 h-40 flex items-center justify-center mb-8 shrink-0">
-              <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+        <div className="fixed inset-0 z-[9999] bg-[#0a0c10]/95 backdrop-blur-md flex items-center justify-center">
+          <div className="w-[340px] h-[340px] flex flex-col items-center justify-center border border-neon-lime border-dashed rounded-3xl bg-black/50 shadow-[0_0_50px_rgba(163,255,18,0.15)]">
+            <div className="relative w-40 h-40 flex items-center justify-center shrink-0">
+              <svg className="absolute inset-0 block w-40 h-40 transform -rotate-90" viewBox="0 0 160 160" preserveAspectRatio="xMidYMid meet">
                 <circle cx="80" cy="80" r="70" fill="none" stroke="#222" strokeWidth="12" />
                 <circle
                   cx="80"
@@ -102,7 +102,6 @@ export default function App() {
                   strokeDasharray="439.8"
                   strokeDashoffset={439.8 - (loadingPct / 100) * 439.8}
                   strokeLinecap="round"
-                  className="transition-all duration-200 ease-out"
                 />
                 <defs>
                   <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
@@ -111,9 +110,13 @@ export default function App() {
                   </linearGradient>
                 </defs>
               </svg>
-              <span className="w-24 text-center text-4xl font-black text-neon-lime tabular-nums">{loadingPct}%</span>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="block w-[120px] text-center text-[40px] leading-none font-black font-mono text-neon-lime">{loadingPct}%</span>
+              </div>
             </div>
-            <h2 className="text-xl font-bold tracking-widest uppercase text-white/90 text-center min-h-[32px]">{loadingText}</h2>
+            <div className="h-10 mt-8 flex items-center justify-center px-6">
+              <h2 className="w-[260px] text-center text-base font-bold tracking-[0.18em] uppercase text-white/90 whitespace-nowrap overflow-hidden text-ellipsis">{loadingText}</h2>
+            </div>
           </div>
         </div>
       )}
