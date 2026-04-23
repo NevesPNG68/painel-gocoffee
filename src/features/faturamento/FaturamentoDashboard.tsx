@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { MultiSelect } from '../../components/MultiSelect';
 import { getFaturamentoBase } from '../../data/mockData';
 import { cn, pad2, moneyBR, intBR, brDate, weekdayPt, weekOfMonth, parseFaixaStart, monthLabelPt } from '../../lib/utils';
-import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart, PieChart, Pie, Cell, BarChart, Bar, LabelList } from 'recharts';
 import * as XLSX from 'xlsx';
 
 interface Props {
@@ -255,23 +255,41 @@ export default function FaturamentoDashboard({ globalBuffer }: Props) {
             </div>
           </div>
 
-          <div className="glass-panel p-6">
-            <h3 className="font-bold mb-4">Ticket Médio</h3>
-            <div className="h-[280px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={daily}>
-                  <defs>
-                    <linearGradient id="colorTkt" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#4dd7ff" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#4dd7ff" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <XAxis dataKey="dateBR" stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => String(val).slice(0,5)} />
-                  <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `R$ ${val}`} />
-                  <Tooltip contentStyle={{ backgroundColor: '#0a0c10', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }} itemStyle={{ color: '#4dd7ff', fontWeight: 'bold' }} formatter={(value: number) => moneyBR(value)} />
-                  <Area type="monotone" dataKey="tkt" stroke="#4dd7ff" strokeWidth={3} fillOpacity={1} fill="url(#colorTkt)" />
-                </AreaChart>
-              </ResponsiveContainer>
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div className="glass-panel p-6">
+              <h3 className="font-bold mb-4">Ticket Médio por Dia</h3>
+              <div className="h-[280px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={daily}>
+                    <defs>
+                      <linearGradient id="colorTkt" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#4dd7ff" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#4dd7ff" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <XAxis dataKey="dateBR" stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => String(val).slice(0,5)} />
+                    <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(val) => `R$ ${val}`} />
+                    <Tooltip contentStyle={{ backgroundColor: '#0a0c10', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }} itemStyle={{ color: '#4dd7ff', fontWeight: 'bold' }} formatter={(value: number) => moneyBR(value)} />
+                    <Area type="monotone" dataKey="tkt" stroke="#4dd7ff" strokeWidth={3} fillOpacity={1} fill="url(#colorTkt)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            <div className="glass-panel p-6">
+              <h3 className="font-bold mb-4">Pedidos por Hora / Faixa</h3>
+              <div className="h-[280px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={faixas.map(f => ({ faixa: f, pedidos: dayFaixa.filter(x => x.faixa === f).reduce((s, x) => s + x.orders, 0) }))}>
+                    <XAxis dataKey="faixa" stroke="rgba(255,255,255,0.4)" fontSize={10} tickLine={false} axisLine={false} interval={0} angle={-20} textAnchor="end" height={70} />
+                    <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
+                    <Tooltip contentStyle={{ backgroundColor: '#0a0c10', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }} formatter={(value: number) => `${intBR(value)} pedidos`} />
+                    <Bar dataKey="pedidos" fill="#4dd7ff" radius={[8,8,0,0]}>
+                      <LabelList dataKey="pedidos" position="top" fill="rgba(255,255,255,0.75)" fontSize={11} />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
 
@@ -293,12 +311,18 @@ export default function FaturamentoDashboard({ globalBuffer }: Props) {
               <h3 className="font-bold mb-4">Por Semana do Mês</h3>
               <div className="h-[240px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={barData}>
+                  <BarChart data={barData} barCategoryGap="25%">
                     <XAxis dataKey="name" stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
                     <YAxis hide />
-                    <Tooltip contentStyle={{ backgroundColor: '#0a0c10', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }} formatter={(value: number) => moneyBR(value)} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
-                    <Bar dataKey="total" radius={[8,8,0,0]}>
+                    <Tooltip
+                      cursor={{ fill: 'rgba(255,255,255,0.06)' }}
+                      contentStyle={{ backgroundColor: '#0a0c10', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}
+                      labelFormatter={(label) => `Semana ${label}`}
+                      formatter={(value: number) => moneyBR(value)}
+                    />
+                    <Bar dataKey="total" radius={[8,8,0,0]} maxBarSize={48}>
                       {barData.map((entry, index) => <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />)}
+                      <LabelList dataKey="total" position="top" formatter={(v: number) => `R$ ${(Number(v) / 1000).toFixed(1)}k`} fill="rgba(255,255,255,0.72)" fontSize={10} />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
@@ -306,39 +330,44 @@ export default function FaturamentoDashboard({ globalBuffer }: Props) {
             </div>
           </div>
 
-          <div className="glass-panel p-6 overflow-x-auto">
+          <div className="glass-panel p-6 overflow-hidden">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="font-bold">Mapa de Calor • Pedidos por Faixa / Dia</h3>
                 <p className="text-xs text-muted mt-1">As células representam a quantidade de pedidos.</p>
               </div>
-              <div className="text-xs text-muted">Linhas: datas • Colunas: faixas</div>
+              <div className="text-xs text-muted hidden sm:block">Linhas: datas • Colunas: faixas</div>
             </div>
-            <div className="min-w-[920px]">
-              <div className="grid" style={{ gridTemplateColumns: `140px repeat(${faixas.length}, minmax(78px, 1fr))` }}>
-                <div className="sticky left-0 z-20 bg-[#0a0c10] border-b border-white/10 p-3 text-xs uppercase tracking-wider text-muted">Dia</div>
-                {faixas.map(f => <div key={f} className="border-b border-white/10 p-3 text-[11px] text-center text-muted whitespace-nowrap">{f}</div>)}
-                {days.map(d => {
-                  const dts = new Date(d + 'T00:00:00');
-                  return (
-                    <React.Fragment key={d}>
-                      <div className="sticky left-0 z-10 bg-[#0a0c10] border-b border-white/5 p-3 text-sm font-bold">{brDate(d)} <span className="block text-[10px] text-muted font-normal">{weekdayPt(dts)}</span></div>
-                      {faixas.map(f => {
-                        const row = dayFaixa.find(x => x.date === d && x.faixa === f);
-                        const val = row ? row.orders : 0;
-                        const max = Math.max(...dayFaixa.map(x => x.orders), 1);
-                        const opacity = val > 0 ? 0.15 + (val / max) * 0.85 : 0.04;
-                        return (
-                          <div key={`${d}-${f}`} className="border-b border-white/5 border-l border-white/5 p-0.5 group">
-                            <div className="relative h-14 rounded-md flex items-center justify-center text-white font-bold transition-transform hover:scale-[1.02]" style={{ backgroundColor: val > 0 ? `rgba(163,255,18,${opacity})` : 'rgba(255,255,255,0.04)' }}>
-                              <span className="text-xs font-bold drop-shadow-md">{val > 0 ? val : ''}</span>
+            <div className="overflow-x-auto pb-2">
+              <div className="min-w-[920px]">
+                <div className="grid" style={{ gridTemplateColumns: `140px repeat(${faixas.length}, minmax(78px, 1fr))` }}>
+                  <div className="bg-[#0a0c10] border-b border-white/10 p-3 text-xs uppercase tracking-wider text-muted md:sticky md:left-0 md:z-20">Dia</div>
+                  {faixas.map(f => <div key={f} className="border-b border-white/10 p-3 text-[11px] text-center text-muted whitespace-nowrap">{f}</div>)}
+                  {days.map(d => {
+                    const dts = new Date(d + 'T00:00:00');
+                    return (
+                      <React.Fragment key={d}>
+                        <div className="bg-[#0a0c10] border-b border-white/5 p-3 text-sm font-bold md:sticky md:left-0 md:z-10">
+                          {brDate(d)}
+                          <span className="block text-[10px] text-muted font-normal">{weekdayPt(dts)}</span>
+                        </div>
+                        {faixas.map(f => {
+                          const row = dayFaixa.find(x => x.date === d && x.faixa === f);
+                          const val = row ? row.orders : 0;
+                          const max = Math.max(...dayFaixa.map(x => x.orders), 1);
+                          const opacity = val > 0 ? 0.15 + (val / max) * 0.85 : 0.04;
+                          return (
+                            <div key={`${d}-${f}`} className="border-b border-white/5 border-l border-white/5 p-0.5 group">
+                              <div className="relative h-14 rounded-md flex items-center justify-center text-white font-bold transition-transform hover:scale-[1.02]" style={{ backgroundColor: val > 0 ? `rgba(163,255,18,${opacity})` : 'rgba(255,255,255,0.04)' }}>
+                                <span className="text-xs font-bold drop-shadow-md">{val > 0 ? val : ''}</span>
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
-                    </React.Fragment>
-                  );
-                })}
+                          );
+                        })}
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
