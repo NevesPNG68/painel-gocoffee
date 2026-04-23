@@ -22,10 +22,15 @@ export default function App() {
         setLoadingPct(10);
         setLoadingText('Procurando arquivo no GitHub...');
         
-        // Caminhos relativos que vão tentar achar o arquivo DRE GO COFFEE_COMPETENCIA.xlsx no repositório
+        // Caminhos dentro do próprio GitHub Pages.
+        // Mantenha a planilha no repositório com o nome planilha.xlsx para atualização automática.
+        const base = import.meta.env.BASE_URL || '/';
         const candidates = [
-          './DRE%20GO%20COFFEE_COMPETENCIA.xlsx',
-          './DRE%20GO%20COFFEE_COMPETENCIA.XLSX'
+          `${base}planilha.xlsx`,
+          `${base}PLANILHA.xlsx`,
+          `${base}DRE%20GO%20COFFEE_COMPETENCIA.xlsx`,
+          `${base}DRE%20GO%20COFFEE_COMPETENCIA.XLSX`,
+          `${base}data/planilha.xlsx`
         ];
         
         let buf: ArrayBuffer | null = null;
