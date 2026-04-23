@@ -39,6 +39,14 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Copy spreadsheet into dist
+        run: |
+          if [ -f "DRE GO COFFEE_COMPETENCIA.xlsx" ]; then
+            cp "DRE GO COFFEE_COMPETENCIA.xlsx" "dist/DRE GO COFFEE_COMPETENCIA.xlsx"
+            cp "DRE GO COFFEE_COMPETENCIA.xlsx" "dist/planilha.xlsx"
+          fi
+          ls -la dist
+
       - name: Verify dist
         run: |
           ls -la
