@@ -18,6 +18,7 @@ export default function App() {
     let isMounted = true;
     const fetchAutoLoad = async () => {
       try {
+        setDashboardVisible(false);
         setLoadingPct(10);
         setLoadingText('Procurando arquivo no GitHub...');
         const base = import.meta.env.BASE_URL || '/';
@@ -49,17 +50,19 @@ export default function App() {
             clearInterval(interval);
             if (!isMounted) return;
             setLoadingPct(100);
-            setLoadingText('Concluído!');
+            setLoadingText('Finalizando painel...');
+            setGlobalBuffer(buf);
             setTimeout(() => {
-              if (isMounted) {
-                setLoadingPct(null);
-                setGlobalBuffer(buf);
-              }
-            }, 400);
+              if (!isMounted) return;
+              setDashboardVisible(true);
+              setTimeout(() => {
+                if (isMounted) setLoadingPct(null);
+              }, 250);
+            }, 900);
           } else {
             if (isMounted) {
               setLoadingPct(simPct);
-              if (simPct > 60) setLoadingText('Montando Dashboards...');
+              if (simPct > 60) setLoadingText('Montando dashboards...');
             }
           }
         }, 150);
@@ -74,15 +77,6 @@ export default function App() {
       isMounted = false;
     };
   }, []);
-
-  useEffect(() => {
-    if (!globalBuffer) {
-      setDashboardVisible(false);
-      return;
-    }
-    const timer = setTimeout(() => setDashboardVisible(true), 250);
-    return () => clearTimeout(timer);
-  }, [globalBuffer]);
 
   return (
     <div className="min-h-screen text-white pb-12 relative">
