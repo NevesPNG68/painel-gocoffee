@@ -159,9 +159,19 @@ export default function App() {
       </nav>
 
       <main className="pt-4 sm:pt-6 px-3 sm:px-6 pb-12 max-w-[1500px] mx-auto overflow-x-hidden">
-        {dashboardVisible && activeTab === 'rec' && <FaturamentoDashboard globalBuffer={globalBuffer} setGlobalBuffer={setGlobalBuffer} />}
-        {dashboardVisible && activeTab === 'desp' && <DespesasDashboard globalBuffer={globalBuffer} setGlobalBuffer={setGlobalBuffer} />}
-        {dashboardVisible && activeTab === 'pag' && <PagamentosDashboard globalBuffer={globalBuffer} setGlobalBuffer={setGlobalBuffer} />}
+        {dashboardVisible && (
+          <>
+            <section className={activeTab === 'rec' ? 'block' : 'hidden'}>
+              <FaturamentoDashboard globalBuffer={globalBuffer} setGlobalBuffer={setGlobalBuffer} />
+            </section>
+            <section className={activeTab === 'desp' ? 'block' : 'hidden'}>
+              <DespesasDashboard globalBuffer={globalBuffer} setGlobalBuffer={setGlobalBuffer} />
+            </section>
+            <section className={activeTab === 'pag' ? 'block' : 'hidden'}>
+              <PagamentosDashboard globalBuffer={globalBuffer} setGlobalBuffer={setGlobalBuffer} />
+            </section>
+          </>
+        )}
       </main>
     </div>
   );
