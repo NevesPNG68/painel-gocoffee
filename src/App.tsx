@@ -15,6 +15,57 @@ export default function App() {
   const [dashboardVisible, setDashboardVisible] = useState(false);
 
   useEffect(() => {
+    const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches || 'ontouchstart' in window;
+    if (!isTouchDevice) return;
+
+    let startX = 0;
+    let startY = 0;
+    let moved = false;
+
+    const onTouchStart = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) return;
+      startX = touch.clientX;
+      startY = touch.clientY;
+      moved = false;
+    };
+
+    const onTouchMove = (event: TouchEvent) => {
+      const touch = event.touches[0];
+      if (!touch) return;
+      if (Math.abs(touch.clientX - startX) > 10 || Math.abs(touch.clientY - startY) > 10) {
+        moved = true;
+      }
+    };
+
+    const onTouchEnd = (event: TouchEvent) => {
+      if (moved) return;
+
+      const target = event.target instanceof Element
+        ? event.target.closest('button, a, [role="button"], summary') as HTMLElement | null
+        : null;
+
+      if (!target) return;
+      if (target instanceof HTMLButtonElement && target.disabled) return;
+      if (target.getAttribute('aria-disabled') === 'true') return;
+      if (target.closest('input, select, textarea')) return;
+
+      event.preventDefault();
+      target.click();
+    };
+
+    document.addEventListener('touchstart', onTouchStart, { passive: true });
+    document.addEventListener('touchmove', onTouchMove, { passive: true });
+    document.addEventListener('touchend', onTouchEnd, { passive: false });
+
+    return () => {
+      document.removeEventListener('touchstart', onTouchStart);
+      document.removeEventListener('touchmove', onTouchMove);
+      document.removeEventListener('touchend', onTouchEnd);
+    };
+  }, []);
+
+  useEffect(() => {
     let isMounted = true;
     const fetchAutoLoad = async () => {
       try {
